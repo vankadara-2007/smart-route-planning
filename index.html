@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Route Planning Using Search Algorithms</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="brand">
+        <span class="brand-icon">➤</span>
+        <div>
+            <h2>SmartRoute</h2>
+            <p>AI-Powered Navigation</p>
+        </div>
+    </div>
+    <nav>
+        <a href="#planner">Route Planner</a>
+        <a href="#map-section">Map</a>
+        <a href="#results">Results</a>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <span class="tag">ARTIFICIAL INTELLIGENCE PROJECT</span>
+        <h1>Smart Route Planning</h1>
+        <p>Explore AI search algorithms and discover routes
+           between locations using an interactive road network.</p>
+    </section>
+
+    <section class="planner-card" id="planner">
+        <div class="section-heading">
+            <div>
+                <h2>Plan Your Route</h2>
+                <p>Select your locations and search algorithm.</p>
+            </div>
+            <span class="status"><span></span> Demo Network</span>
+        </div>
+
+        <form id="route-form">
+            <div class="form-grid">
+                <div class="field">
+                    <label for="start">Starting Location</label>
+                    <select id="start" required>
+                        <option value="A">A — Central Hub</option>
+                        <option value="B">B — North Point</option>
+                        <option value="C">C — East Junction</option>
+                        <option value="D">D — West Park</option>
+                        <option value="E">E — City Center</option>
+                        <option value="F">F — South Point</option>
+                        <option value="G">G — Destination</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="destination">Destination</label>
+                    <select id="destination" required>
+                        <option value="G">G — Destination</option>
+                        <option value="A">A — Central Hub</option>
+                        <option value="B">B — North Point</option>
+                        <option value="C">C — East Junction</option>
+                        <option value="D">D — West Park</option>
+                        <option value="E">E — City Center</option>
+                        <option value="F">F — South Point</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="algorithm">Search Algorithm</label>
+                    <select id="algorithm">
+                        <option value="bfs">Breadth-First Search (BFS)</option>
+                        <option value="dfs">Depth-First Search (DFS)</option>
+                        <option value="ucs">Uniform Cost Search (UCS)</option>
+                        <option value="greedy">Greedy Best-First Search</option>
+                        <option value="astar">A* Search</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="primary-btn">
+                    ➤ Find Route
+                </button>
+                <button type="button" id="reset-btn" class="secondary-btn">
+                    ↻ Reset
+                </button>
+            </div>
+            <p id="message" class="message" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <section class="map-card" id="map-section">
+        <div class="section-heading">
+            <div>
+                <h2>Route Visualization</h2>
+                <p>Explore nodes, roads, and the selected route.</p>
+            </div>
+            <span class="map-label">INTERACTIVE GRAPH</span>
+        </div>
+
+        <div class="legend">
+            <span><i class="dot start-dot"></i> Start</span>
+            <span><i class="dot end-dot"></i> Destination</span>
+            <span><i class="dot explored-dot"></i> Explored</span>
+            <span><i class="line route-line"></i> Final Route</span>
+            <span><i class="line road-line"></i> Road</span>
+        </div>
+
+        <div class="map-wrapper">
+            <svg id="route-map" viewBox="0 0 700 420"
+                 role="img" aria-label="Road graph showing locations A to G">
+                <g id="roads"></g>
+                <g id="route-lines"></g>
+                <g id="nodes"></g>
+            </svg>
+        </div>
+        <p class="map-note">
+            Road numbers represent sample travel costs, not real-world distances.
+        </p>
+    </section>
+
+    <section class="results-section" id="results">
+        <div class="section-heading">
+            <div>
+                <h2>Search Results</h2>
+                <p>Analyze the algorithm's route and performance.</p>
+            </div>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+            <div class="empty-icon">⌖</div>
+            <h3>Ready to find a route?</h3>
+            <p>Choose your locations and click Find Route to begin.</p>
+        </div>
+
+        <div id="results-content" hidden>
+            <div class="result-banner">
+                <div>
+                    <span class="small-label">SELECTED ALGORITHM</span>
+                    <h3 id="result-algorithm">—</h3>
+                </div>
+                <span class="success-badge">Route Found</span>
+            </div>
+
+            <div class="metrics">
+                <div class="metric-card">
+                    <span class="metric-icon">↗</span>
+                    <p>Total Route Cost</p>
+                    <h3 id="total-cost">—</h3>
+                    <small>Cost units</small>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">◎</span>
+                    <p>Nodes Explored</p>
+                    <h3 id="explored-count">—</h3>
+                    <small>Unique nodes expanded</small>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">◷</span>
+                    <p>Execution Time</p>
+                    <h3 id="execution-time">—</h3>
+                    <small>Milliseconds</small>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>Best Route Found</h3>
+                <div id="route-display" class="route-display"></div>
+                <p id="route-summary"></p>
+            </div>
+
+            <div class="detail-card">
+                <h3>Search Exploration</h3>
+                <p class="detail-description">
+                    Nodes are shown in the order they were expanded.
+                </p>
+                <div id="explored-list" class="chip-list"></div>
+            </div>
+
+            <div class="detail-card">
+                <h3>Step-by-Step Explanation</h3>
+                <ol id="steps-list" class="steps-list"></ol>
+            </div>
+        </div>
+    </section>
+
+    <section class="algorithm-info">
+        <h2>Understanding the Algorithms</h2>
+        <div class="info-grid">
+            <article>
+                <h3>BFS</h3>
+                <p>Explores nodes level by level. Finds a path with the fewest edges in an unweighted graph.</p>
+            </article>
+            <article>
+                <h3>DFS</h3>
+                <p>Explores one branch deeply before backtracking. Does not guarantee the lowest cost.</p>
+            </article>
+            <article>
+                <h3>UCS</h3>
+                <p>Expands the lowest accumulated cost first. Finds a minimum-cost route with non-negative edges.</p>
+            </article>
+            <article>
+                <h3>Greedy Best-First</h3>
+                <p>Uses a heuristic to move toward the destination. It does not guarantee the lowest cost.</p>
+            </article>
+            <article>
+                <h3>A* Search</h3>
+                <p>Uses path cost plus heuristic: f(n) = g(n) + h(n). An admissible heuristic ensures optimality under standard conditions.</p>
+            </article>
+        </div>
+    </section>
+
+    <footer>
+        <p>SmartRoute · Educational AI Search Algorithms Project</p>
+        <p>Built with HTML, CSS and JavaScript</p>
+    </footer>
+</main>
+
+</body>
+</html>
